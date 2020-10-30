@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+ROLE_ARN="$1"
+
+if [ -z "${ROLE_ARN}" ]; then
+  echo "Usage: $0 {ROLE_ARN}" >/dev/stderr
+  return 1
+fi
+
+echo "Assuming to role: ${ROLE_ARN}"
+
+TOKENS=$(aws sts assume-role --role-arn ${ROLE_ARN} --role-session-name assumed-role)
+export AWS_ACCESS_KEY_ID=$(echo ${TOKENS} | jq -r '.Credentials.AccessKeyId')
+export AWS_SECRET_ACCESS_KEY=$(echo ${TOKENS} | jq -r '.Credentials.SecretAccessKey')
+export AWS_SESSION_TOKEN=$(echo ${TOKENS} | jq -r '.Credentials.SessionToken')
